@@ -1,58 +1,54 @@
 #!/usr/bin/env python3
 """
-Provider Selection Example - Echolace LLM Router
-Shows how to force specific providers and switch between them.
+Provider selection demo (Echolace LLM Router).
+
+Shows how to:
+- list available backends
+- switch between them programmatically
+
+Run from project root:
+  python examples/provider_selection.py
 """
 
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from __future__ import annotations
 
 from llm_router import LLMInterface
 
-def main():
-    print("🔧 Provider Selection Example")
+
+def main() -> None:
+    print("Provider Selection Example")
     print("=" * 45)
-    
-    # Create interface
+
     llm = LLMInterface()
-    
-    # Show all available backends
     available = llm.available_backends()
     print(f"Available backends: {available}")
-    
+
     if not available:
-        print("❌ No real backends available. Install optional dependencies:")
-        print("   pip install -e .[openai]  # For OpenAI")
-        print("   pip install -e .[anthropic] # For Anthropic")
-        print("   pip install -e .[all]      # For all backends")
+        print("No real backends available. Install optional dependencies, e.g.:")
+        print("  pip install -e .[openai]      # OpenAI")
+        print("  pip install -e .[anthropic]   # Anthropic")
+        print("  pip install -e .[google]      # Gemini")
+        print("  pip install -e .[all]         # Everything")
         return
-    
-    # Test each available backend
+
     prompt = "What is 2 + 2?"
-    
     for backend_name in available:
-        print(f"\n🤖 Testing {backend_name}:")
-        
+        print(f"\nTesting {backend_name}:")
         try:
-            # Switch to this backend
-            success = llm.switch(backend_name)
-            if not success:
-                print(f"   ❌ Failed to switch to {backend_name}")
+            if not llm.switch(backend_name):
+                print(f"  Failed to switch to {backend_name}")
                 continue
-            
-            # Generate response
             response = llm.generate(prompt)
-            print(f"   ✅ Response: {response}")
-            
-        except Exception as e:
-            print(f"   ❌ Error: {e}")
-    
-    # Show current state
-    print("\n📊 Final state:")
+            print(f"  Response: {response}")
+        except Exception as exc:
+            print(f"  Error: {exc}")
+
     info = llm.info()
-    print(f"   Current backend: {info['backend']}")
-    print(f"   Best backend: {info['best_backend']}")
+    print("\nFinal state:")
+    print(f"  Current backend: {info['backend']}")
+    print(f"  Best backend: {info['best_backend']}")
+
 
 if __name__ == "__main__":
     main()
+
