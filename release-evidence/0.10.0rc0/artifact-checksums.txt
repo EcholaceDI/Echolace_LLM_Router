@@ -1,0 +1,3 @@
+# Artifact Checksums
+# Format: <algorithm>  <artifact-path>
+# Example: sha256  dist/my-artifact.tar.gz

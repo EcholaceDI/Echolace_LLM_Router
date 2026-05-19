@@ -1,0 +1,14 @@
+# Echolace LLM Router - Core Dependencies
+requests>=2.25.0
+typing-extensions>=4.0.0
+
+# Install with optional dependencies:
+# pip install -e .[openai]          # For OpenAI backends
+# pip install -e .[anthropic]       # For Anthropic/Claude backends  
+# pip install -e .[google]           # For Google Gemini backends
+# pip install -e .[huggingface]     # For HuggingFace backends
+# pip install -e .[privacy]         # For Presidio + encrypted vault support
+# pip install -e .[intent]          # For sentence-transformers intent routing
+# pip install -e .[telemetry]       # For psutil-based hardware monitoring
+# pip install -e .[local]            # For local model backends
+# pip install -e .[all]              # Install all backends

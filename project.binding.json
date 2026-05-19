@@ -1,0 +1,10 @@
+{
+  "name": "Echolace-LLM-Router",
+  "project_type": "infrastructure",
+  "canon_root": "root",
+  "runtime_root": "spark",
+  "governance_root": "root",
+  "entrypoints": [],
+  "owner": "dreambearer",
+  "status": "active"
+}

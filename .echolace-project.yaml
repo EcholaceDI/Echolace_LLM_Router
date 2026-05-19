@@ -1,0 +1,7 @@
+project_id: 07-production-applications-echolace-llm-router
+bucket: 07_Production_Applications
+owner: unassigned
+status: production
+last_reviewed: '2026-03-01'
+readiness_score: 8
+next_decision_date: '2026-03-31'

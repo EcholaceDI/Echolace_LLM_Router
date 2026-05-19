@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "echolace-llm-router"
+version = "0.10.0rc0"
+description = "A modular LLM router for multiple backends"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Echolace Team", email = "team@echolace.dev"}]
+maintainers = [{name = "Echolace Team", email = "team@echolace.dev"}]
+keywords = ["llm", "ai", "router", "anthropic", "openai", "gemini", "huggingface"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.25.0",
+    "typing-extensions>=4.0.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0.0"]
+anthropic = ["anthropic>=0.3.0"]
+google = ["google-generativeai>=0.1.0"]
+huggingface = ["huggingface_hub>=0.15.0"]
+privacy = [
+    "presidio-analyzer>=2.2.0",
+    "cryptography>=42.0.0",
+]
+intent = [
+    "sentence-transformers>=3.0.0",
+    "scikit-learn>=1.3.0",
+]
+telemetry = [
+    "psutil>=5.9.0",
+]
+local = [
+    "transformers>=4.20.0",
+    "torch>=1.12.0",
+    "llama-cpp-python>=0.2.0",
+    "gpt4all>=2.0.0",
+    "lmstudio>=0.1.0",
+]
+all = [
+    "openai>=1.0.0",
+    "anthropic>=0.3.0",
+    "google-generativeai>=0.1.0",
+    "huggingface_hub>=0.15.0",
+    "presidio-analyzer>=2.2.0",
+    "cryptography>=42.0.0",
+    "sentence-transformers>=3.0.0",
+    "scikit-learn>=1.3.0",
+    "psutil>=5.9.0",
+    "transformers>=4.20.0",
+    "torch>=1.12.0",
+    "llama-cpp-python>=0.2.0",
+    "gpt4all>=2.0.0",
+    "lmstudio>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/echolace/llm-router"
+Documentation = "https://echolace-llm-router.readthedocs.io/"
+Repository = "https://github.com/echolace/llm-router.git"
+"Bug Tracker" = "https://github.com/echolace/llm-router/issues"
+
+[tool.setuptools.packages.find]
+include = ["llm_router*"]
+
+[tool.setuptools.package-data]
+llm_router = ["py.typed"]

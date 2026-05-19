@@ -1,0 +1,10 @@
+{
+  "name": "echolace-llm-router-release-scripts",
+  "private": true,
+  "scripts": {
+    "lint": "make lint",
+    "test": "make test",
+    "build": "make build",
+    "release:verify": "npm run lint && npm run test && npm run build"
+  }
+}
