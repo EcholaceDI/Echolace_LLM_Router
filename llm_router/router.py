@@ -4,7 +4,7 @@ import os
 import time
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from . import REGISTERED_BACKENDS
 from .base import LLMBackend
@@ -18,9 +18,12 @@ from .diagnostics import (
     record_routing_decision,
 )
 from .diagnostics import scan as diagnostic_scan
+from .logging_utils import get_logger, log_event
 from .policies import RequestPolicyEngine, RoutePlan
 
 LOCAL_BACKENDS = ("ollama", "gguf", "hf_local", "gpt4all", "lmstudio")
+
+logger = get_logger("llm_router.router")
 
 
 class LLMInterface:
@@ -213,8 +216,19 @@ class LLMInterface:
             return os.getenv("UNIVERSAL_OPENAI_MODEL", self.fallback_cloud_model)
         return self.model_override
 
-    def _build_route_plan(self, prompt: str) -> RoutePlan:
+    def _build_route_plan(self, prompt: Any) -> RoutePlan:
         baseline_provider, baseline_model = self._baseline_backend_choice()
+        log_event(
+            logger,
+            "route_plan_build_start",
+            fields={
+                "provider_override": self.provider_override,
+                "model_override": self.model_override,
+                "privacy_first": self.privacy_first,
+                "intent_routing": self.intent_routing,
+                "hardware_adaptive": self.hardware_adaptive,
+            },
+        )
         local_provider, local_model = self._select_local_backend(
             self.local_privacy_backend
         )
@@ -245,10 +259,26 @@ class LLMInterface:
             metadata=plan.to_dict(),
         )
         if plan.provider == "blocked":
+            log_event(
+                logger,
+                "route_plan_blocked",
+                level=40,
+                fields={"execution_mode": plan.execution_mode},
+            )
             raise RuntimeError(
                 "Privacy policy requires strict local execution, but no local "
                 "backend is currently available."
             )
+        log_event(
+            logger,
+            "route_plan_built",
+            fields={
+                "provider": plan.provider,
+                "model": plan.model,
+                "execution_mode": plan.execution_mode,
+                "intent_label": getattr(plan.intent, "label", None),
+            },
+        )
         return plan
 
     def _token_count(self, text: str) -> int:
@@ -257,15 +287,34 @@ class LLMInterface:
     # ---------------------------------------------------------
     # Public API
     # ---------------------------------------------------------
-    def generate(self, prompt: str, **kwargs: Any) -> str:
+    def generate(self, prompt: Any, **kwargs: Any) -> str:
         plan = self._build_route_plan(prompt)
         backend = self._resolve_backend(plan.provider, plan.model)
 
+        log_event(
+            logger,
+            "generate_start",
+            fields={
+                "provider": plan.provider,
+                "model": plan.model,
+                "execution_mode": plan.execution_mode,
+            },
+        )
         started_token = self.benchmark_store.start_request(plan.provider)
         started_at = time.perf_counter()
         try:
             raw_response = backend.generate(plan.prompt, **kwargs)
         except Exception:
+            log_event(
+                logger,
+                "generate_error",
+                level=40,
+                fields={
+                    "provider": plan.provider,
+                    "model": plan.model,
+                    "execution_mode": plan.execution_mode,
+                },
+            )
             duration_ms = (time.perf_counter() - started_at) * 1000.0
             self.benchmark_store.finish_request(
                 backend=plan.provider,
@@ -297,9 +346,18 @@ class LLMInterface:
                 "execution_mode": plan.execution_mode,
             },
         )
+        log_event(
+            logger,
+            "generate_complete",
+            fields={
+                "provider": plan.provider,
+                "duration_ms": round(duration_ms, 4),
+                "token_count": self._token_count(response),
+            },
+        )
         return response
 
-    def stream(self, prompt: str, **kwargs: Any):
+    def stream(self, prompt: Any, **kwargs: Any) -> Iterator[Dict[str, Any]]:
         plan = self._build_route_plan(prompt)
         backend = self._resolve_backend(plan.provider, plan.model)
 

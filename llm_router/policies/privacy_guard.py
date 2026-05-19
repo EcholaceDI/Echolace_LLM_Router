@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
+from ..logging_utils import get_logger, log_event
 from ..privacy import PrivacyVault
 from ..security import PrivacyScanResult
+
+logger = get_logger("llm_router.privacy_guard")
 
 
 @dataclass
@@ -136,6 +139,19 @@ class PrivacyGuard:
 
             record = self.vault.store_scan(scan_result)
             request_id = record["request_id"]
+
+        log_event(
+            logger,
+            "privacy_evaluated",
+            fields={
+                "enabled": enabled,
+                "profile": profile.name,
+                "contains_pii": scan_result.contains_pii,
+                "highest_risk": scan_result.highest_risk,
+                "execution_mode": execution_mode,
+                "request_id": request_id,
+            },
+        )
 
         return PrivacyDecision(
             execution_mode=execution_mode,

@@ -10,12 +10,14 @@ from typing import Any, Deque, Dict, List, Optional, Type
 from . import REGISTERED_BACKENDS
 from .base import LLMBackend
 from .healing import HealingPlanner
+from .logging_utils import get_logger, log_event
 from .telemetry import BenchmarkStore, HardwareMonitor
 
 _ROUTING_EVENTS: Deque[Dict[str, Any]] = deque(maxlen=500)
 _DEFAULT_BENCHMARK_STORE = BenchmarkStore()
 _DEFAULT_HARDWARE_MONITOR = HardwareMonitor(benchmark_store=_DEFAULT_BENCHMARK_STORE)
 _DEFAULT_HEALING_PLANNER = HealingPlanner()
+logger = get_logger("llm_router.diagnostics")
 
 
 def get_default_benchmark_store() -> BenchmarkStore:
@@ -104,6 +106,15 @@ def _backend_status(backend: Type[LLMBackend]) -> Dict[str, Any]:
 def scan() -> Dict[str, Any]:
     backends = [_backend_status(backend) for backend in REGISTERED_BACKENDS]
     actions = _DEFAULT_HEALING_PLANNER.plan(backends)
+    log_event(
+        logger,
+        "diagnostics_scan_complete",
+        fields={
+            "backend_count": len(backends),
+            "available_backends": sum(1 for b in backends if b.get("available")),
+            "recommended_action_count": len(actions),
+        },
+    )
     return {
         "platform": {
             "os": platform.system(),

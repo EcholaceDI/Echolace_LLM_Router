@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from ..telemetry import BenchmarkStore, HardwareMonitor
 from .intent_router import IntentRouter
@@ -59,7 +59,7 @@ class RequestPolicyEngine:
             )
         else:
             intent = self.intent_router.recommend(intent_prompt)
-        hardware_status = (
+        hardware_status: Dict[str, Any] = (
             self.hardware_monitor.sample()
             if self.hardware_adaptive
             else self.hardware_monitor.current()

@@ -7,7 +7,7 @@ name = "echolace-llm-router"
 version = "0.10.0rc0"
 description = "A modular LLM router for multiple backends"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [{name = "Echolace Team", email = "team@echolace.dev"}]
 maintainers = [{name = "Echolace Team", email = "team@echolace.dev"}]
 keywords = ["llm", "ai", "router", "anthropic", "openai", "gemini", "huggingface"]
@@ -24,6 +24,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+license-files = ["LICENSE"]
 requires-python = ">=3.8"
 dependencies = [
     "requests>=2.25.0",

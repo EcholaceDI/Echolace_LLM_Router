@@ -12,6 +12,8 @@ Echolace LLM Router currently ships a policy-driven routing layer with privacy c
 - [Integration Guide](INTEGRATION_GUIDE.md)
 - [Deployment](DEPLOYMENT.md)
 - [Project Metadata](PROJECT_METADATA.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [PyPI Packaging](PYPI_PACKAGING.md)
 - [Strategic Roadmap](STRATEGIC_ROADMAP.md)
 
 ## Current Feature Set
