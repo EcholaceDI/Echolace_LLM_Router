@@ -97,21 +97,14 @@ class OpenAIUniversalBackend(LLMBackend):
     def __init__(self, model: Optional[str] = None, **kwargs):
         base = self._base_url()
         if not base:
-            raise DependencyMissingError(
-                "UNIVERSAL_OPENAI_BASE_URL is not set"
-            )
+            raise DependencyMissingError("UNIVERSAL_OPENAI_BASE_URL is not set")
         self.base_url = base
         self.api_key = self._api_key()
-        self.model = (
-            model or
-            os.getenv("UNIVERSAL_OPENAI_MODEL", "gpt-4o-mini")
-        )
+        self.model = model or os.getenv("UNIVERSAL_OPENAI_MODEL", "gpt-4o-mini")
         self.gen_kwargs = kwargs
 
     def _headers(self) -> Dict[str, str]:
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
         return headers
@@ -133,9 +126,7 @@ class OpenAIUniversalBackend(LLMBackend):
                 raise DependencyMissingError(msg)
             return resp.json()
         except Exception as exc:
-            raise DependencyMissingError(
-                f"Universal OpenAI request failed: {exc}"
-            )
+            raise DependencyMissingError(f"Universal OpenAI request failed: {exc}")
 
     def generate(self, prompt: str, **kwargs) -> str:
         payload = {
@@ -155,11 +146,7 @@ class OpenAIUniversalBackend(LLMBackend):
         except Exception:
             return json.dumps(result)
 
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         payload = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
@@ -188,7 +175,7 @@ class OpenAIUniversalBackend(LLMBackend):
                     continue
                 try:
                     if line.startswith(b"data:"):
-                        data = line[len(b"data:"):]
+                        data = line[len(b"data:") :]
                         raw = json.loads(data.decode("utf-8"))
                         ch = (
                             raw.get("choices", [{}])[0]

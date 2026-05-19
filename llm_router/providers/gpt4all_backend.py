@@ -73,15 +73,12 @@ class GPT4AllBackend(LLMBackend):
             resp = requests.post(url, json=payload, timeout=45)
             if resp.status_code != 200:
                 msg = (
-                    f"GPT4All server returned HTTP {resp.status_code}: "
-                    f"{resp.text}"
+                    f"GPT4All server returned HTTP {resp.status_code}: " f"{resp.text}"
                 )
                 raise DependencyMissingError(msg)
             return resp.json()
         except Exception as exc:
-            raise DependencyMissingError(
-                f"GPT4All request failed: {exc}"
-            )
+            raise DependencyMissingError(f"GPT4All request failed: {exc}")
 
     def generate(self, prompt: str, **kwargs) -> str:
         """Non-streaming generation."""
@@ -102,11 +99,7 @@ class GPT4AllBackend(LLMBackend):
         except Exception:
             return json.dumps(result)
 
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """Streaming generation."""
         payload = {
             "model": self.model,
@@ -131,7 +124,7 @@ class GPT4AllBackend(LLMBackend):
                     continue
                 try:
                     if line.startswith(b"data:"):
-                        json_part = line[len(b"data:"):]
+                        json_part = line[len(b"data:") :]
                         raw = json.loads(json_part.decode("utf-8"))
                         choices = raw.get("choices", [{}])
                         delta = choices[0].get("delta", {})

@@ -5,8 +5,8 @@ import pytest
 from llm_router.base import LLMBackend
 from llm_router.policies.engine import RequestPolicyEngine
 from llm_router.policies.intent_router import IntentDecision
-from llm_router.policies.route_planner import RoutePlan
 from llm_router.policies.privacy_guard import PrivacyDecision, PrivacyGuard
+from llm_router.policies.route_planner import RoutePlan
 from llm_router.privacy import PrivacyVault
 from llm_router.router import LLMInterface
 from llm_router.security import PrivacyScanResult
@@ -253,7 +253,9 @@ def test_privacy_guard_prevents_unsafe_cloud_routing_without_local_backend() -> 
     assert plan.provider == "blocked"
 
 
-def test_router_generate_uses_policy_plan_and_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_router_generate_uses_policy_plan_and_backend(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     original_find_backend = LLMInterface._find_backend
     monkeypatch.setattr(
         LLMInterface,

@@ -39,7 +39,9 @@ def placeholder_cloud_backend(monkeypatch: pytest.MonkeyPatch) -> Type[LLMBacken
     llm_router.REGISTERED_BACKENDS.extend(original)
 
 
-def test_hybrid_redacted_rehydrates_allowed_entities_end_to_end(placeholder_cloud_backend) -> None:
+def test_hybrid_redacted_rehydrates_allowed_entities_end_to_end(
+    placeholder_cloud_backend,
+) -> None:
     engine = RequestPolicyEngine(
         privacy_guard=PrivacyGuard(vault=PrivacyVault(use_presidio=False)),
         benchmark_store=BenchmarkStore(),
@@ -62,4 +64,3 @@ def test_hybrid_redacted_rehydrates_allowed_entities_end_to_end(placeholder_clou
     assert "<EMAIL_ADDRESS_1>" in placeholder_cloud_backend.last_prompt
     assert "bob@example.com" not in placeholder_cloud_backend.last_prompt
     assert response == "Contact: bob@example.com"
-

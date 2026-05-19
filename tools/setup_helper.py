@@ -19,7 +19,6 @@ import importlib.util
 import shutil
 from textwrap import indent
 
-
 # Mapping of backend → required pip packages
 BACKEND_REQUIREMENTS = {
     "OpenAI": ["openai"],

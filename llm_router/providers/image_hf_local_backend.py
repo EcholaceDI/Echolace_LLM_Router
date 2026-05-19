@@ -1,11 +1,12 @@
 # image_hf_local_backend.py
 
-import os
 import importlib.util
-from typing import Any, Dict, Optional, List
+import os
+from typing import Any, Dict, List, Optional
 
 from ..base import LLMBackend
 from .auto_installer import install_package
+
 
 class HuggingFaceImageLocalBackend(LLMBackend):
     """
@@ -50,11 +51,12 @@ class HuggingFaceImageLocalBackend(LLMBackend):
         if not self._has_torch():
             install_package("torch")
 
-        from transformers import LlavaForConditionalGeneration, LlavaProcessor
-        import torch
-        from PIL import Image  # For loading images
         import base64
         import io
+
+        import torch
+        from PIL import Image  # For loading images
+        from transformers import LlavaForConditionalGeneration, LlavaProcessor
 
         self.model_path = model or os.getenv("HF_IMAGE_MODEL")
         if not self.model_path:
@@ -105,7 +107,9 @@ class HuggingFaceImageLocalBackend(LLMBackend):
                             images.append(img)
                             prompt += "<image>"  # LLaVA placeholder
 
-        inputs = self.processor(prompt, images=images, return_tensors="pt").to(self.device)
+        inputs = self.processor(prompt, images=images, return_tensors="pt").to(
+            self.device
+        )
         gen_kwargs = {
             "max_new_tokens": kwargs.get("max_tokens", 256),
             "temperature": kwargs.get("temperature", 0.7),
@@ -114,8 +118,9 @@ class HuggingFaceImageLocalBackend(LLMBackend):
 
         output = self.model.generate(**inputs, **gen_kwargs)
         response = self.processor.decode(output[0], skip_special_tokens=True)
-        return response[len(prompt):].strip()  # Trim prompt
+        return response[len(prompt) :].strip()  # Trim prompt
 
     # Stream can be simulated similar to hf_local, using generate with do_sample and yield tokens
+
 
 # Add to REGISTERED_BACKENDS in __init__.py

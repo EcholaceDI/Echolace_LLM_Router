@@ -59,7 +59,11 @@ class RequestPolicyEngine:
             )
         else:
             intent = self.intent_router.recommend(intent_prompt)
-        hardware_status = self.hardware_monitor.sample() if self.hardware_adaptive else self.hardware_monitor.current()
+        hardware_status = (
+            self.hardware_monitor.sample()
+            if self.hardware_adaptive
+            else self.hardware_monitor.current()
+        )
         hardware_status["local_viability"] = {}
         local_candidates = []
         if local_provider:
@@ -75,18 +79,22 @@ class RequestPolicyEngine:
             else 0.5 if privacy.execution_mode == "hybrid_redacted" else 0.0
         )
         for candidate in local_candidates:
-            hardware_status["local_viability"][candidate] = self.hardware_monitor.local_viability(
-                candidate,
-                privacy_priority=privacy_priority,
+            hardware_status["local_viability"][candidate] = (
+                self.hardware_monitor.local_viability(
+                    candidate,
+                    privacy_priority=privacy_priority,
+                )
             )
         hardware_status["downgrade_recommendations"] = {}
         for candidate in local_candidates:
             if hasattr(self.hardware_monitor, "downgrade_decision"):
-                hardware_status["downgrade_recommendations"][candidate] = self.hardware_monitor.downgrade_decision(
-                    candidate,
-                    available_backends,
-                    cloud_provider=cloud_provider,
-                    strict_local=privacy.execution_mode == "strict_local",
+                hardware_status["downgrade_recommendations"][candidate] = (
+                    self.hardware_monitor.downgrade_decision(
+                        candidate,
+                        available_backends,
+                        cloud_provider=cloud_provider,
+                        strict_local=privacy.execution_mode == "strict_local",
+                    )
                 )
             else:
                 hardware_status["downgrade_recommendations"][candidate] = {
@@ -96,7 +104,11 @@ class RequestPolicyEngine:
                 }
         benchmark_summary = self.benchmark_store.summary()
 
-        if not self.intent_routing and not provider_override and privacy.execution_mode == "cloud_allowed":
+        if (
+            not self.intent_routing
+            and not provider_override
+            and privacy.execution_mode == "cloud_allowed"
+        ):
             intent.recommended_provider = cloud_provider or intent.recommended_provider
             intent.recommended_model = cloud_model or intent.recommended_model
 

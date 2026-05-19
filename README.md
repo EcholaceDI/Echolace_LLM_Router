@@ -1,6 +1,6 @@
 # Echolace_LLM_Router
-[![CI](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-not%20configured-lightgrey)](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/ci.yml)
+[![CI](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/llm-router-ci.yml/badge.svg?branch=main)](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/llm-router-ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-not%20configured-lightgrey)](https://github.com/EcholaceDI/EcholaceDI/actions/workflows/llm-router-ci.yml)
 [![License](https://img.shields.io/github/license/EcholaceDI/EcholaceDI)](https://github.com/EcholaceDI/EcholaceDI/blob/main/LICENSE)
 
 Suggested GitHub topics: `llm`, `router`, `local-llm`, `privacy`, `cloud-llm`, `intent-routing`, `rag`, `python`.

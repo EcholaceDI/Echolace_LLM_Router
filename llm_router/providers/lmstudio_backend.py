@@ -70,10 +70,7 @@ class LMStudioBackend(LLMBackend):
 
     def __init__(self, model: Optional[str] = None, **kwargs):
         self.base_url = self._base_url()
-        self.model = (
-            model or
-            os.getenv("LMSTUDIO_MODEL", None)
-        )
+        self.model = model or os.getenv("LMSTUDIO_MODEL", None)
         self.gen_kwargs = kwargs
 
     def _post(self, endpoint: str, payload: dict) -> dict:
@@ -88,16 +85,11 @@ class LMStudioBackend(LLMBackend):
                 timeout=45,
             )
             if resp.status_code != 200:
-                msg = (
-                    "LM Studio backend error HTTP "
-                    f"{resp.status_code}: {resp.text}"
-                )
+                msg = "LM Studio backend error HTTP " f"{resp.status_code}: {resp.text}"
                 raise DependencyMissingError(msg)
             return resp.json()
         except Exception as exc:
-            raise DependencyMissingError(
-                f"LM Studio request failed: {exc}"
-            )
+            raise DependencyMissingError(f"LM Studio request failed: {exc}")
 
     def generate(self, prompt: str, **kwargs) -> str:
         """Non-streaming generation."""
@@ -118,11 +110,7 @@ class LMStudioBackend(LLMBackend):
         except Exception:
             return json.dumps(result)
 
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """Streaming generation."""
         payload = {
             "model": self.model,
@@ -143,8 +131,7 @@ class LMStudioBackend(LLMBackend):
         ) as resp:
             if resp.status_code != 200:
                 msg = (
-                    "LM Studio streaming error HTTP "
-                    f"{resp.status_code}: {resp.text}"
+                    "LM Studio streaming error HTTP " f"{resp.status_code}: {resp.text}"
                 )
                 raise DependencyMissingError(msg)
 
@@ -153,7 +140,7 @@ class LMStudioBackend(LLMBackend):
                     continue
                 try:
                     if line.startswith(b"data:"):
-                        data = line[len(b"data:"):]
+                        data = line[len(b"data:") :]
                         raw = json.loads(data.decode("utf-8"))
                         ch = (
                             raw.get("choices", [{}])[0]

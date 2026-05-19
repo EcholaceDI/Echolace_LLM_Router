@@ -9,7 +9,6 @@ from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import dataclass, field
 from typing import Any, Deque, Dict, Iterable, List, Optional, Sequence, Tuple
 
-
 INTENT_LABELS = (
     "CODE",
     "DEBUGGING",
@@ -236,7 +235,7 @@ class HashingIntentEmbedder(BaseIntentEmbedder):
                 if len(word) < size:
                     continue
                 for index in range(len(word) - size + 1):
-                    gram = word[index:index + size]
+                    gram = word[index : index + size]
                     features[self._bucket("ng:" + gram)] += 0.35
         return _normalize_sparse(features)
 
@@ -266,10 +265,7 @@ class SentenceTransformerIntentEmbedder(BaseIntentEmbedder):
                 )
 
         vectors = self._embedder.encode(list(texts), normalize_embeddings=True)
-        return [
-            _normalize_dense(vector)
-            for vector in vectors
-        ]
+        return [_normalize_dense(vector) for vector in vectors]
 
 
 class IntentVectorIndex:
@@ -321,7 +317,11 @@ class RouteRegretTracker:
         predicted_provider = prediction.route.get("provider", "")
         predicted_model = prediction.route.get("model")
         same_provider = predicted_provider == actual_provider
-        same_model = predicted_model == actual_model if actual_model is not None else same_provider
+        same_model = (
+            predicted_model == actual_model
+            if actual_model is not None
+            else same_provider
+        )
         regret = 0.0 if same_provider and same_model and accepted else 1.0
         record = RouteRegretRecord(
             schema_name=prediction.schema_name,
@@ -370,11 +370,14 @@ class IntentClassifier:
         self.enable_embeddings = (
             enable_embeddings
             if enable_embeddings is not None
-            else os.getenv("ECHOLACE_ENABLE_EMBEDDINGS", "0").lower() in {"1", "true", "yes"}
+            else os.getenv("ECHOLACE_ENABLE_EMBEDDINGS", "0").lower()
+            in {"1", "true", "yes"}
         )
         self.embedder = embedder or self._build_default_embedder()
         self.schemas = schemas or self._build_default_schemas()
-        self.default_schema = default_schema if default_schema in self.schemas else "default"
+        self.default_schema = (
+            default_schema if default_schema in self.schemas else "default"
+        )
         self.index = IntentVectorIndex(self.embedder)
         self.route_regret_tracker = RouteRegretTracker()
         self._register_schemas()
@@ -385,7 +388,9 @@ class IntentClassifier:
         schema_name: Optional[str] = None,
         top_k: int = 5,
     ) -> IntentPrediction:
-        schema = self.schemas.get(schema_name or self.default_schema, self.schemas[self.default_schema])
+        schema = self.schemas.get(
+            schema_name or self.default_schema, self.schemas[self.default_schema]
+        )
         hits = self.index.query(schema.name, prompt, top_k=max(top_k, 5))
         scores = self._aggregate_scores(hits, schema)
 
@@ -398,7 +403,9 @@ class IntentClassifier:
             label = schema.fallback_label
 
         confidence = self._confidence(top_score, runner_up, threshold, below_threshold)
-        route = dict(schema.routes.get(label, DEFAULT_INTENT_ROUTES[schema.fallback_label]))
+        route = dict(
+            schema.routes.get(label, DEFAULT_INTENT_ROUTES[schema.fallback_label])
+        )
         return IntentPrediction(
             label=label,
             confidence=confidence,

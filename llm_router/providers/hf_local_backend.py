@@ -61,13 +61,14 @@ class HuggingFaceLocalBackend(LLMBackend):
                 "transformers (install via: pip install transformers)"
             )
         if not self._has_torch():
-            raise DependencyMissingError(
-                "torch (install via: pip install torch)"
-            )
+            raise DependencyMissingError("torch (install via: pip install torch)")
 
         import torch
-        from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                                  TextIteratorStreamer)
+        from transformers import (
+            AutoModelForCausalLM,
+            AutoTokenizer,
+            TextIteratorStreamer,
+        )
 
         # Determine model path
         self.model_path = model or os.getenv("HF_LOCAL_MODEL")
@@ -97,9 +98,7 @@ class HuggingFaceLocalBackend(LLMBackend):
         )
 
         # Load the model
-        torch_dtype = (
-            torch.float16 if self.device == "cuda" else torch.float32
-        )
+        torch_dtype = torch.float16 if self.device == "cuda" else torch.float32
 
         self.model = self.Model.from_pretrained(
             self.model_path,
@@ -122,11 +121,7 @@ class HuggingFaceLocalBackend(LLMBackend):
     # ---------------------------------------------
     # Streaming generation
     # ---------------------------------------------
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
 
         streamer = self.TextIteratorStreamer(
             self.tokenizer,

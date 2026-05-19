@@ -47,14 +47,11 @@ class OpenAIStreamingBackend(LLMBackend):
     # ---------------------------------------------
     def __init__(self, model: Optional[str] = None, **kwargs):
         if not self._has_openai_lib():
-            raise DependencyMissingError(
-                "openai (install via: pip install openai)"
-            )
+            raise DependencyMissingError("openai (install via: pip install openai)")
 
         if not self._has_api_key():
             raise RuntimeError(
-                "OPENAI_API_KEY not set. "
-                "Export it or pass provider credentials."
+                "OPENAI_API_KEY not set. " "Export it or pass provider credentials."
             )
 
         from openai import OpenAI
@@ -77,11 +74,7 @@ class OpenAIStreamingBackend(LLMBackend):
     # ---------------------------------------------
     # Streaming API
     # ---------------------------------------------
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """
         Streaming generator yielding Format C chunks.
         """
@@ -98,7 +91,7 @@ class OpenAIStreamingBackend(LLMBackend):
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             stream=True,
-            **args
+            **args,
         )
 
         for chunk in stream:

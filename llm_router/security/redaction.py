@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Iterable, List, Optional
 
 if TYPE_CHECKING:
     from .pii import PrivacyFinding
@@ -26,8 +26,10 @@ def redact_text(text: str, findings: Iterable["PrivacyFinding"]) -> RedactionRes
     for finding in ordered:
         if finding.start < cursor:
             continue
-        chunks.append(text[cursor:finding.start])
-        entity_counts[finding.entity_type] = entity_counts.get(finding.entity_type, 0) + 1
+        chunks.append(text[cursor : finding.start])
+        entity_counts[finding.entity_type] = (
+            entity_counts.get(finding.entity_type, 0) + 1
+        )
         placeholder = "<{0}_{1}>".format(
             finding.entity_type,
             entity_counts[finding.entity_type],
@@ -54,7 +56,11 @@ def rehydrate_text(
     allowed = set(allowed_entity_types or [])
     hydrated = text
     for placeholder, value in placeholder_map.items():
-        if entity_map is not None and allowed and entity_map.get(placeholder) not in allowed:
+        if (
+            entity_map is not None
+            and allowed
+            and entity_map.get(placeholder) not in allowed
+        ):
             continue
         hydrated = hydrated.replace(placeholder, value)
     return hydrated

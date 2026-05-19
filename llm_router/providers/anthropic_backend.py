@@ -35,7 +35,7 @@ class AnthropicBackend(LLMBackend):
     def diagnose(cls) -> Dict[str, Any]:
         return {
             "api_key": "FOUND" if cls._has_api_key() else "MISSING",
-            "library": "FOUND" if cls._has_library() else "MISSING"
+            "library": "FOUND" if cls._has_library() else "MISSING",
         }
 
     def __init__(self, model: str = None, **kwargs):
@@ -44,14 +44,12 @@ class AnthropicBackend(LLMBackend):
             raise DependencyMissingError("anthropic library not installed")
 
         from anthropic import Anthropic
+
         self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
         # Default to Claude Sonnet 4.5 if no model specified
         # Can be overridden by setting ANTHROPIC_MODEL in the environment
-        self.model = (
-            model or
-            os.getenv("ANTHROPIC_MODEL", "claude-4-5-sonnet-latest")
-        )
+        self.model = model or os.getenv("ANTHROPIC_MODEL", "claude-4-5-sonnet-latest")
 
         # Store additional kwargs (temp, max_tokens, etc.)
         self.kwargs = kwargs
@@ -74,11 +72,7 @@ class AnthropicBackend(LLMBackend):
     # -----------------------------
     # Streaming Mode (Format C)
     # -----------------------------
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """
         Structured streaming output.
 
@@ -94,9 +88,7 @@ class AnthropicBackend(LLMBackend):
             "model": self.model,
             "max_tokens": kwargs.get("max_tokens", 1024),
             "temperature": kwargs.get("temperature", 0.7),
-            "messages": [
-                {"role": "user", "content": prompt}
-            ]
+            "messages": [{"role": "user", "content": prompt}],
         }
 
         # Merge backend-level defaults too
@@ -111,10 +103,10 @@ class AnthropicBackend(LLMBackend):
 
                 try:
                     if (
-                        event.type == "content_block_delta" and
-                        hasattr(event, "delta") and
-                        hasattr(event.delta, "text") and
-                        event.delta.text
+                        event.type == "content_block_delta"
+                        and hasattr(event, "delta")
+                        and hasattr(event.delta, "text")
+                        and event.delta.text
                     ):
                         token = event.delta.text
 

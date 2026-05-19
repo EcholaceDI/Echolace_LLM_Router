@@ -84,7 +84,9 @@ class IntentRouter:
                 "model": prediction.recommended_model,
             },
             source=prediction.source,
-            schema_name=raw.get("schema_name", self.schema_name or self.classifier.default_schema),
+            schema_name=raw.get(
+                "schema_name", self.schema_name or self.classifier.default_schema
+            ),
             threshold=float(raw.get("threshold", 0.0)),
             below_threshold=bool(raw.get("below_threshold", False)),
             retrieval_hits=[],

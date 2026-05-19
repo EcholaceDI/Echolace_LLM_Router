@@ -49,9 +49,7 @@ class HuggingFaceAPIBackend(LLMBackend):
         token = os.getenv("HUGGINGFACE_API_KEY")
 
         self.model_name = (
-            model
-            or os.getenv("HF_API_MODEL")
-            or "mistralai/Mistral-7B-Instruct-v0.2"
+            model or os.getenv("HF_API_MODEL") or "mistralai/Mistral-7B-Instruct-v0.2"
         )
 
         self.client = InferenceClient(
@@ -83,11 +81,7 @@ class HuggingFaceAPIBackend(LLMBackend):
     # ---------------------------------------------------------
     # Streaming Mode
     # ---------------------------------------------------------
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
 
         args = {
             "max_new_tokens": kwargs.get("max_tokens", 512),

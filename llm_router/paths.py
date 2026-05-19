@@ -8,7 +8,6 @@ import os
 from pathlib import Path
 from typing import Optional
 
-
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 

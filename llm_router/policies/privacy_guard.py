@@ -15,21 +15,42 @@ class PrivacyPolicyProfile:
 
 DEFAULT_PROFILE = PrivacyPolicyProfile(
     name="default",
-    strict_entity_types=["API_KEY", "BEARER_TOKEN", "SSH_PRIVATE_KEY", "SSN", "CREDIT_CARD"],
-    hybrid_entity_types=["EMAIL_ADDRESS", "PHONE_NUMBER", "PERSON", "LOCATION", "ACCOUNT_NUMBER", "IP_ADDRESS"],
-    allow_rehydration_entity_types=["EMAIL_ADDRESS", "PHONE_NUMBER", "PERSON", "LOCATION", "ACCOUNT_NUMBER"],
+    strict_entity_types=[
+        "API_KEY",
+        "BEARER_TOKEN",
+        "SSH_PRIVATE_KEY",
+        "SSN",
+        "CREDIT_CARD",
+    ],
+    hybrid_entity_types=[
+        "EMAIL_ADDRESS",
+        "PHONE_NUMBER",
+        "PERSON",
+        "LOCATION",
+        "ACCOUNT_NUMBER",
+        "IP_ADDRESS",
+    ],
+    allow_rehydration_entity_types=[
+        "EMAIL_ADDRESS",
+        "PHONE_NUMBER",
+        "PERSON",
+        "LOCATION",
+        "ACCOUNT_NUMBER",
+    ],
 )
 
 HIPAA_PROFILE = PrivacyPolicyProfile(
     name="hipaa",
-    strict_entity_types=DEFAULT_PROFILE.strict_entity_types + ["PERSON", "LOCATION", "EMAIL_ADDRESS", "PHONE_NUMBER"],
+    strict_entity_types=DEFAULT_PROFILE.strict_entity_types
+    + ["PERSON", "LOCATION", "EMAIL_ADDRESS", "PHONE_NUMBER"],
     hybrid_entity_types=["IP_ADDRESS"],
     allow_rehydration_entity_types=["PERSON"],
 )
 
 GDPR_PROFILE = PrivacyPolicyProfile(
     name="gdpr",
-    strict_entity_types=DEFAULT_PROFILE.strict_entity_types + ["PERSON", "LOCATION", "EMAIL_ADDRESS", "PHONE_NUMBER", "IP_ADDRESS"],
+    strict_entity_types=DEFAULT_PROFILE.strict_entity_types
+    + ["PERSON", "LOCATION", "EMAIL_ADDRESS", "PHONE_NUMBER", "IP_ADDRESS"],
     hybrid_entity_types=["ACCOUNT_NUMBER"],
     allow_rehydration_entity_types=[],
 )
@@ -103,7 +124,10 @@ class PrivacyGuard:
             hybrid_match = bool(entity_types.intersection(profile.hybrid_entity_types))
             if strict_match or scan_result.highest_risk == "regulated":
                 execution_mode = "strict_local"
-            elif hybrid_match or scan_result.highest_risk in ("confidential", "internal"):
+            elif hybrid_match or scan_result.highest_risk in (
+                "confidential",
+                "internal",
+            ):
                 execution_mode = "hybrid_redacted"
                 allow_rehydration = True
                 allowed_entity_types = list(profile.allow_rehydration_entity_types)
@@ -117,7 +141,11 @@ class PrivacyGuard:
             execution_mode=execution_mode,
             request_id=request_id,
             scan_result=scan_result,
-            prompt_for_cloud=scan_result.redacted_payload if scan_result.source_kind != "text" else scan_result.redacted_text,
+            prompt_for_cloud=(
+                scan_result.redacted_payload
+                if scan_result.source_kind != "text"
+                else scan_result.redacted_text
+            ),
             prompt_for_local=prompt,
             allow_rehydration=allow_rehydration,
             allowed_entity_types=allowed_entity_types,

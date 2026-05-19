@@ -67,10 +67,7 @@ class GoogleBackend(LLMBackend):
         self.genai.configure(api_key=api_key)
 
         # Model selection
-        self.model_name = (
-            model or
-            os.getenv("GOOGLE_MODEL", "gemini-1.5-pro-latest")
-        )
+        self.model_name = model or os.getenv("GOOGLE_MODEL", "gemini-1.5-pro-latest")
 
         # Save additional backend config
         self.kwargs = kwargs
@@ -91,11 +88,7 @@ class GoogleBackend(LLMBackend):
     # ---------------------------------------------------------
     # Streaming mode
     # ---------------------------------------------------------
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """
         Yields:
             {
@@ -111,11 +104,7 @@ class GoogleBackend(LLMBackend):
         args.update(self.kwargs)
 
         # Gemini streaming API
-        response = self.model.generate_content(
-            prompt,
-            stream=True,
-            **args
-        )
+        response = self.model.generate_content(prompt, stream=True, **args)
 
         for chunk in response:
             token = ""

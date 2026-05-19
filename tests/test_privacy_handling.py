@@ -43,7 +43,9 @@ def test_message_list_payload_detection_redacts_before_cloud_routing() -> None:
     assert decision.prompt_for_local == messages
 
 
-def test_strict_local_blocks_sensitive_structured_payload_without_local_backend() -> None:
+def test_strict_local_blocks_sensitive_structured_payload_without_local_backend() -> (
+    None
+):
     guard = PrivacyGuard(vault=PrivacyVault(use_presidio=False))
     payload = {"patient": {"name": "Jane Doe", "ssn": "123-45-6789"}}
 

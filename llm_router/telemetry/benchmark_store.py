@@ -7,7 +7,6 @@ from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any, Deque, Dict, Optional, Sequence
 
-
 LOCAL_BACKENDS = {"ollama", "gguf", "hf_local", "gpt4all", "lmstudio"}
 
 
@@ -62,7 +61,9 @@ class BenchmarkStore:
         key = f"{backend}:{started_at}"
         with self._lock:
             self._started_at.pop(key, None)
-            self._pending_requests[backend] = max(0, self._pending_requests[backend] - 1)
+            self._pending_requests[backend] = max(
+                0, self._pending_requests[backend] - 1
+            )
             queue_depth = self._pending_requests[backend]
         self.record_benchmark_sample(
             backend=backend,
@@ -141,19 +142,19 @@ class BenchmarkStore:
     def summary(self, backend: Optional[str] = None) -> Dict[str, Any]:
         if backend is not None:
             return self._summary_for_backend(backend)
-        names = set(self._latencies) | set(self._pending_requests) | set(self._backend_profiles)
-        return {
-            name: self._summary_for_backend(name)
-            for name in sorted(names)
-        }
+        names = (
+            set(self._latencies)
+            | set(self._pending_requests)
+            | set(self._backend_profiles)
+        )
+        return {name: self._summary_for_backend(name) for name in sorted(names)}
 
     def pending_requests(self, backend: Optional[str] = None) -> Any:
         with self._lock:
             if backend is not None:
                 return self._pending_requests.get(backend, 0)
             return {
-                name: count
-                for name, count in sorted(self._pending_requests.items())
+                name: count for name, count in sorted(self._pending_requests.items())
             }
 
     def local_viability(
@@ -176,7 +177,8 @@ class BenchmarkStore:
             1.0,
         )
         mem_penalty = min(
-            (hardware_status.get("memory", {}).get("utilization_percent") or 0.0) / 100.0,
+            (hardware_status.get("memory", {}).get("utilization_percent") or 0.0)
+            / 100.0,
             1.0,
         )
         gpu_penalty = min(
@@ -244,15 +246,14 @@ class BenchmarkStore:
             return {
                 "action": "downgrade_local",
                 "target_provider": best_local,
-                "target_model": self._backend_profiles.get(best_local, {}).get("target_model"),
+                "target_model": self._backend_profiles.get(best_local, {}).get(
+                    "target_model"
+                ),
                 "current_viability": current_viability,
                 "target_viability": best_score,
             }
 
-        fallback_cloud = (
-            profile.get("cloud_fallback")
-            or cloud_provider
-        )
+        fallback_cloud = profile.get("cloud_fallback") or cloud_provider
         if not strict_local and fallback_cloud and fallback_cloud in available_backends:
             return {
                 "action": "offload_cloud",
@@ -282,7 +283,9 @@ class BenchmarkStore:
 
         return {
             "pending_requests": pending,
-            "queue_depth_current": max(queue_depth[-1], pending) if queue_depth else pending,
+            "queue_depth_current": (
+                max(queue_depth[-1], pending) if queue_depth else pending
+            ),
             "queue_depth_avg": _average(queue_depth),
             "sample_count": len(latencies),
             "canary_sample_count": canary_count,
@@ -292,7 +295,9 @@ class BenchmarkStore:
             "tokens_per_second_avg": _average(tokens),
             "tokens_per_second_ewma": _ewma(tokens),
             "latest_source": sources[-1] if sources else None,
-            "last_sample_at": round(last_sample_at, 4) if last_sample_at is not None else None,
+            "last_sample_at": (
+                round(last_sample_at, 4) if last_sample_at is not None else None
+            ),
             "profile": profile,
         }
 
@@ -300,8 +305,7 @@ class BenchmarkStore:
         path = Path(self.sqlite_path or "")
         path.parent.mkdir(parents=True, exist_ok=True)
         with sqlite3.connect(path) as connection:
-            connection.execute(
-                """
+            connection.execute("""
                 CREATE TABLE IF NOT EXISTS benchmark_samples (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     backend TEXT NOT NULL,
@@ -314,8 +318,7 @@ class BenchmarkStore:
                     queue_depth INTEGER,
                     metadata_json TEXT NOT NULL
                 )
-                """
-            )
+                """)
             connection.commit()
 
     def _persist_row(self, row: Dict[str, Any]) -> None:

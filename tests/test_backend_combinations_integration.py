@@ -67,7 +67,11 @@ def build_engine(
 
 def test_hybrid_redacted_cloud_backend_receives_redacted_prompt(fake_backends) -> None:
     engine = build_engine(privacy_first=True, privacy_profile="default")
-    llm = LLMInterface(policy_engine=engine, privacy_first=True, fallback_cloud_provider="openai_standard")
+    llm = LLMInterface(
+        policy_engine=engine,
+        privacy_first=True,
+        fallback_cloud_provider="openai_standard",
+    )
 
     response = llm.generate("Email me at bob@example.com about the report.")
 
@@ -101,7 +105,11 @@ def test_strict_local_blocks_cloud_and_uses_local_backend(fake_backends) -> None
 
 def test_cloud_allowed_routes_to_cloud_when_privacy_disabled(fake_backends) -> None:
     engine = build_engine(privacy_first=False)
-    llm = LLMInterface(policy_engine=engine, privacy_first=False, fallback_cloud_provider="openai_standard")
+    llm = LLMInterface(
+        policy_engine=engine,
+        privacy_first=False,
+        fallback_cloud_provider="openai_standard",
+    )
 
     response = llm.generate("Hello there.")
 
@@ -110,4 +118,3 @@ def test_cloud_allowed_routes_to_cloud_when_privacy_disabled(fake_backends) -> N
     assert llm.routing_plan()["provider"] == "openai_standard"
     assert FakeCloudBackend.last_prompt == "Hello there."
     assert response.startswith("CLOUD_RESPONSE:")
-

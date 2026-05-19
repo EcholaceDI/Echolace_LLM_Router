@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional
 
 from .redaction import redact_text
 
-
 ENTITY_RISK_LEVELS = {
     "API_KEY": "regulated",
     "BEARER_TOKEN": "regulated",
@@ -213,7 +212,10 @@ class PiiInspector:
         return findings
 
     def _presidio_findings(self, text: str) -> List[PrivacyFinding]:
-        if not self.use_presidio or importlib.util.find_spec("presidio_analyzer") is None:
+        if (
+            not self.use_presidio
+            or importlib.util.find_spec("presidio_analyzer") is None
+        ):
             return []
 
         try:
@@ -229,7 +231,7 @@ class PiiInspector:
                 findings.append(
                     PrivacyFinding(
                         entity_type=entity_type,
-                        match=text[result.start:result.end],
+                        match=text[result.start : result.end],
                         start=int(result.start),
                         end=int(result.end),
                         source="presidio",
@@ -245,8 +247,16 @@ class PiiInspector:
     def _dedupe_findings(self, findings: List[PrivacyFinding]) -> List[PrivacyFinding]:
         deduped: List[PrivacyFinding] = []
         seen = set()
-        for finding in sorted(findings, key=lambda item: (item.start, -(item.end - item.start))):
-            key = (finding.entity_type, finding.start, finding.end, finding.match, finding.path)
+        for finding in sorted(
+            findings, key=lambda item: (item.start, -(item.end - item.start))
+        ):
+            key = (
+                finding.entity_type,
+                finding.start,
+                finding.end,
+                finding.match,
+                finding.path,
+            )
             if key in seen:
                 continue
             seen.add(key)
@@ -349,8 +359,7 @@ class PiiInspector:
             return [self._normalize_payload(item) for item in payload]
         if isinstance(payload, dict):
             return {
-                key: self._normalize_payload(value)
-                for key, value in payload.items()
+                key: self._normalize_payload(value) for key, value in payload.items()
             }
         if isinstance(payload, list):
             return [self._normalize_payload(item) for item in payload]

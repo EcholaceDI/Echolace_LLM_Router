@@ -1,10 +1,6 @@
 from typing import Dict, Sequence
 
-from llm_router.intent import (
-    BaseIntentEmbedder,
-    IntentClassifier,
-    build_intent_schema,
-)
+from llm_router.intent import BaseIntentEmbedder, IntentClassifier, build_intent_schema
 from llm_router.policies.engine import RequestPolicyEngine
 from llm_router.policies.intent_router import IntentRouter
 from llm_router.router import LLMInterface
@@ -88,9 +84,18 @@ def test_expanded_taxonomy_supports_translation_rag_and_agentic() -> None:
     )
     classifier = IntentClassifier(embedder=embedder, schemas={"default": schema})
 
-    assert classifier.classify("please translate this customer reply into spanish").label == "TRANSLATION"
-    assert classifier.classify("use the retrieved context to answer the question").label == "RAG_QA"
-    assert classifier.classify("plan the steps and call the correct tools").label == "TOOL_USE_OR_AGENTIC"
+    assert (
+        classifier.classify("please translate this customer reply into spanish").label
+        == "TRANSLATION"
+    )
+    assert (
+        classifier.classify("use the retrieved context to answer the question").label
+        == "RAG_QA"
+    )
+    assert (
+        classifier.classify("plan the steps and call the correct tools").label
+        == "TOOL_USE_OR_AGENTIC"
+    )
 
 
 def test_calibrated_threshold_falls_back_when_similarity_is_too_low() -> None:
@@ -227,7 +232,9 @@ def test_llm_intent_uses_configurable_semantic_router() -> None:
         intent_routing=True,
         intent_schema="tenant_ops",
     )
-    llm = LLMInterface(provider="anthropic", policy_engine=engine, intent_schema="tenant_ops")
+    llm = LLMInterface(
+        provider="anthropic", policy_engine=engine, intent_schema="tenant_ops"
+    )
 
     result = llm.intent("coordinate actions across systems and tools", top_k=2)
 

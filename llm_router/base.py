@@ -1,16 +1,18 @@
 # base.py
 
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class LLMBackendError(Exception):
     """Generic backend error for LLM routing."""
+
     pass
 
 
 class DependencyMissingError(LLMBackendError):
     """Raised when a required Python package is missing."""
+
     def __init__(self, package: str):
         super().__init__(f"Missing dependency: {package}")
         self.package = package
@@ -59,7 +61,7 @@ class LLMBackend(ABC):
         return {
             "name": cls.name,
             "available": cls.available(),
-            "reason": "diagnostics not implemented"
+            "reason": "diagnostics not implemented",
         }
 
     # ---------------------------------------------------------

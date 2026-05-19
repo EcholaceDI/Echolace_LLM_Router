@@ -12,12 +12,9 @@ from .base import LLMBackend
 from .healing import HealingPlanner
 from .telemetry import BenchmarkStore, HardwareMonitor
 
-
 _ROUTING_EVENTS: Deque[Dict[str, Any]] = deque(maxlen=500)
 _DEFAULT_BENCHMARK_STORE = BenchmarkStore()
-_DEFAULT_HARDWARE_MONITOR = HardwareMonitor(
-    benchmark_store=_DEFAULT_BENCHMARK_STORE
-)
+_DEFAULT_HARDWARE_MONITOR = HardwareMonitor(benchmark_store=_DEFAULT_BENCHMARK_STORE)
 _DEFAULT_HEALING_PLANNER = HealingPlanner()
 
 
@@ -77,9 +74,11 @@ def _env_summary() -> Dict[str, Any]:
         "OPENAI_API_KEY": "SET" if os.getenv("OPENAI_API_KEY") else "NONE",
         "ANTHROPIC_API_KEY": "SET" if os.getenv("ANTHROPIC_API_KEY") else "NONE",
         "GOOGLE_API_KEY": "SET" if os.getenv("GOOGLE_API_KEY") else "NONE",
-        "HUGGINGFACE_API_KEY": "SET" if (
-            os.getenv("HUGGINGFACE_API_KEY") or os.getenv("HF_API_KEY")
-        ) else "NONE",
+        "HUGGINGFACE_API_KEY": (
+            "SET"
+            if (os.getenv("HUGGINGFACE_API_KEY") or os.getenv("HF_API_KEY"))
+            else "NONE"
+        ),
         "HF_LOCAL_MODEL": os.getenv("HF_LOCAL_MODEL") or "NONE",
         "GGUF_MODEL_PATH": os.getenv("GGUF_MODEL_PATH") or "NONE",
         "OLLAMA_MODEL": os.getenv("OLLAMA_MODEL") or "NONE",
@@ -103,10 +102,7 @@ def _backend_status(backend: Type[LLMBackend]) -> Dict[str, Any]:
 
 
 def scan() -> Dict[str, Any]:
-    backends = [
-        _backend_status(backend)
-        for backend in REGISTERED_BACKENDS
-    ]
+    backends = [_backend_status(backend) for backend in REGISTERED_BACKENDS]
     actions = _DEFAULT_HEALING_PLANNER.plan(backends)
     return {
         "platform": {
@@ -121,7 +117,9 @@ def scan() -> Dict[str, Any]:
         "routing_events": get_routing_events(),
         "actionable_status": {
             "healthy": any(backend["available"] for backend in backends),
-            "available_backends": sum(1 for backend in backends if backend["available"]),
+            "available_backends": sum(
+                1 for backend in backends if backend["available"]
+            ),
             "recommended_actions": actions,
         },
     }

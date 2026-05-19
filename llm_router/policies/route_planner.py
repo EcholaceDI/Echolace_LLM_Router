@@ -70,7 +70,10 @@ class RoutePlanner:
                 provider = local_provider
                 model = local_model or model
             prompt = privacy_decision.prompt_for_cloud
-        elif not provider_override and intent_decision.recommended_provider in available_backends:
+        elif (
+            not provider_override
+            and intent_decision.recommended_provider in available_backends
+        ):
             provider = intent_decision.recommended_provider
             model = intent_decision.recommended_model or model
 
@@ -89,7 +92,9 @@ class RoutePlanner:
                 action == "offload_cloud"
                 and privacy_decision.execution_mode != "strict_local"
             ):
-                provider = downgrade.get("target_provider") or cloud_provider or provider
+                provider = (
+                    downgrade.get("target_provider") or cloud_provider or provider
+                )
                 model = downgrade.get("target_model") or cloud_model or model
                 prompt = (
                     privacy_decision.prompt_for_cloud

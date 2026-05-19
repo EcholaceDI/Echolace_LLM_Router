@@ -81,3 +81,7 @@ include = ["llm_router*"]
 
 [tool.setuptools.package-data]
 llm_router = ["py.typed"]
+
+[tool.isort]
+profile = "black"
+line_length = 88

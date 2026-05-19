@@ -1,9 +1,9 @@
 # router.py
 
-from contextlib import contextmanager
-from functools import lru_cache
 import os
 import time
+from contextlib import contextmanager
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import REGISTERED_BACKENDS
@@ -12,12 +12,13 @@ from .diagnostics import (
     get_default_benchmark_store,
     get_default_hardware_monitor,
     get_routing_events,
-    heal as diagnostics_heal,
-    record_routing_decision,
-    scan as diagnostic_scan,
 )
+from .diagnostics import heal as diagnostics_heal
+from .diagnostics import (
+    record_routing_decision,
+)
+from .diagnostics import scan as diagnostic_scan
 from .policies import RequestPolicyEngine, RoutePlan
-
 
 LOCAL_BACKENDS = ("ollama", "gguf", "hf_local", "gpt4all", "lmstudio")
 
@@ -43,7 +44,7 @@ class LLMInterface:
         policy_engine: Optional[RequestPolicyEngine] = None,
         start_hardware_monitor: bool = False,
         hardware_monitor_interval: int = 5,
-        **kwargs: Any
+        **kwargs: Any,
     ):
         self.provider_override = provider.lower() if provider else None
         self.model_override = model
@@ -144,11 +145,7 @@ class LLMInterface:
         return self._activate_backend(provider, model)
 
     def _available_backend_names(self) -> List[str]:
-        return [
-            backend.name
-            for backend in REGISTERED_BACKENDS
-            if backend.available()
-        ]
+        return [backend.name for backend in REGISTERED_BACKENDS if backend.available()]
 
     def _select_local_backend(
         self,
@@ -158,8 +155,7 @@ class LLMInterface:
         if preferred_provider:
             candidates.append(preferred_provider.lower())
         candidates.extend(
-            provider for provider in LOCAL_BACKENDS
-            if provider not in candidates
+            provider for provider in LOCAL_BACKENDS if provider not in candidates
         )
 
         for provider in candidates:
@@ -243,7 +239,9 @@ class LLMInterface:
             selected_provider=plan.provider,
             selected_model=plan.model,
             original_provider=baseline_provider,
-            overridden=(plan.provider != baseline_provider or plan.model != baseline_model),
+            overridden=(
+                plan.provider != baseline_provider or plan.model != baseline_model
+            ),
             metadata=plan.to_dict(),
         )
         if plan.provider == "blocked":
@@ -407,7 +405,9 @@ class LLMInterface:
         report["selected_backend"] = self.current_backend()
         report["selected_model"] = self._active_model
         report["last_route_plan"] = (
-            self._last_route_plan.to_dict() if self._last_route_plan is not None else None
+            self._last_route_plan.to_dict()
+            if self._last_route_plan is not None
+            else None
         )
         return report
 

@@ -65,9 +65,7 @@ class OpenAIBackend(LLMBackend):
     # ---------------------------------------------
     def __init__(self, model: Optional[str] = None, **kwargs):
         if not self._has_openai_lib():
-            raise DependencyMissingError(
-                "openai (install via: pip install openai)"
-            )
+            raise DependencyMissingError("openai (install via: pip install openai)")
 
         from openai import OpenAI
 
@@ -91,8 +89,7 @@ class OpenAIBackend(LLMBackend):
             deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
             self.client = OpenAI(
-                api_key=key,
-                base_url=f"{endpoint}/openai/deployments/{deployment}"
+                api_key=key, base_url=f"{endpoint}/openai/deployments/{deployment}"
             )
 
             # Azure deployments require a model name but ignore it internally

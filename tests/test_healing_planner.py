@@ -7,7 +7,9 @@ from llm_router.healing.planner import HealingPlanner
 from llm_router.router import LLMInterface
 
 
-def test_gguf_plan_uses_discovered_local_model(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_gguf_plan_uses_discovered_local_model(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     planner = HealingPlanner()
     model_dir = tmp_path / "models" / "gguf"
     model_dir.mkdir(parents=True)
@@ -33,7 +35,8 @@ def test_gguf_plan_uses_discovered_local_model(tmp_path: Path, monkeypatch: pyte
     )
 
     matching = [
-        action for action in actions
+        action
+        for action in actions
         if action["backend"] == "gguf"
         and action["issue"] == "missing_model_file"
         and action["action"] == "set_environment_variable"
@@ -42,7 +45,9 @@ def test_gguf_plan_uses_discovered_local_model(tmp_path: Path, monkeypatch: pyte
     assert matching[0]["suggested_value"] == str(model_path.resolve())
 
 
-def test_gguf_download_workflow_can_apply(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_gguf_download_workflow_can_apply(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     planner = HealingPlanner()
     target_path = tmp_path / "models" / "gguf" / "downloaded.gguf"
 
@@ -63,7 +68,9 @@ def test_gguf_download_workflow_can_apply(tmp_path: Path, monkeypatch: pytest.Mo
             }
         ]
     )
-    download = next(action for action in actions if action["action"] == "download_model")
+    download = next(
+        action for action in actions if action["action"] == "download_model"
+    )
 
     def fake_urlretrieve(url: str, destination: str):
         Path(destination).write_bytes(b"gguf-bytes")
@@ -82,7 +89,9 @@ def test_gguf_download_workflow_can_apply(tmp_path: Path, monkeypatch: pytest.Mo
     assert target_path.read_bytes() == b"gguf-bytes"
 
 
-def test_hf_local_plan_includes_dependency_and_snapshot_remediation(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_hf_local_plan_includes_dependency_and_snapshot_remediation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     planner = HealingPlanner()
     monkeypatch.delenv("HF_LOCAL_MODEL", raising=False)
     monkeypatch.setenv("HF_LOCAL_REPO_ID", "acme/test-model")
@@ -108,7 +117,9 @@ def test_hf_local_plan_includes_dependency_and_snapshot_remediation(monkeypatch:
     assert any(action["action"] == "download_hf_snapshot" for action in actions)
 
 
-def test_lmstudio_plan_surfaces_model_selection(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_lmstudio_plan_surfaces_model_selection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     planner = HealingPlanner()
     monkeypatch.delenv("LMSTUDIO_MODEL", raising=False)
 
@@ -126,7 +137,8 @@ def test_lmstudio_plan_surfaces_model_selection(monkeypatch: pytest.MonkeyPatch)
     )
 
     model_actions = [
-        action for action in actions
+        action
+        for action in actions
         if action["action"] == "set_environment_variable"
         and action.get("env_var") == "LMSTUDIO_MODEL"
     ]

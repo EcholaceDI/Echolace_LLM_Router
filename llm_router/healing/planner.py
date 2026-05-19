@@ -62,9 +62,7 @@ class RepairAction:
             "manual_steps": self.manual_steps,
         }
         return {
-            key: value
-            for key, value in payload.items()
-            if value not in (None, [], {})
+            key: value for key, value in payload.items() if value not in (None, [], {})
         }
 
 
@@ -80,7 +78,9 @@ class HealingPlanner:
         prefer_local = self.prefer_local if prefer_local is None else prefer_local
         actions: List[Dict[str, Any]] = []
         for backend in backends:
-            actions.extend(self._actions_for_backend(backend, prefer_local=prefer_local))
+            actions.extend(
+                self._actions_for_backend(backend, prefer_local=prefer_local)
+            )
         return actions
 
     def apply(
@@ -265,7 +265,9 @@ class HealingPlanner:
         prefer_local: bool,
     ) -> List[RepairAction]:
         actions: List[RepairAction] = []
-        configured_model = os.getenv("OLLAMA_MODEL") or ("phi3" if prefer_local else None)
+        configured_model = os.getenv("OLLAMA_MODEL") or (
+            "phi3" if prefer_local else None
+        )
         discovered = self._discover_runtime_models("ollama", diagnostics)
         discovered_names = {item["name"] for item in discovered}
 
@@ -343,7 +345,9 @@ class HealingPlanner:
                 )
             )
 
-        if discovered and (not configured_model or configured_model not in discovered_names):
+        if discovered and (
+            not configured_model or configured_model not in discovered_names
+        ):
             actions.append(
                 RepairAction(
                     backend="lmstudio",
@@ -396,7 +400,9 @@ class HealingPlanner:
                 )
             )
 
-        if discovered and (not configured_model or configured_model not in discovered_names):
+        if discovered and (
+            not configured_model or configured_model not in discovered_names
+        ):
             actions.append(
                 RepairAction(
                     backend="gpt4all",
@@ -525,7 +531,9 @@ class HealingPlanner:
                 return self._skip(result, "pull_models_disabled")
             if action.get("requires_network") and not allow_network:
                 return self._skip(result, "allow_network_disabled")
-            return self._download_hf_snapshot(result, install_python_deps=install_python_deps)
+            return self._download_hf_snapshot(
+                result, install_python_deps=install_python_deps
+            )
 
         return self._skip(result, "manual_action_required")
 
@@ -554,7 +562,9 @@ class HealingPlanner:
                 if attempt == max_attempts:
                     action["status"] = "failed"
                     action["error"] = str(exc)
-                    action["next_steps"] = ["Retry the command manually after reviewing the environment."]
+                    action["next_steps"] = [
+                        "Retry the command manually after reviewing the environment."
+                    ]
                     return action
                 continue
 
@@ -571,7 +581,9 @@ class HealingPlanner:
         action["returncode"] = completed.returncode if completed is not None else None
         action["stdout"] = last_stdout
         action["stderr"] = last_stderr
-        action["next_steps"] = ["Review the command output and retry once the backend is reachable."]
+        action["next_steps"] = [
+            "Review the command output and retry once the backend is reachable."
+        ]
         return action
 
     def _download_model(self, action: Dict[str, Any]) -> Dict[str, Any]:
@@ -599,7 +611,9 @@ class HealingPlanner:
                 os.unlink(temp_name)
             action["status"] = "failed"
             action["error"] = str(exc)
-            action["next_steps"] = ["Verify the model URL and available disk space, then retry."]
+            action["next_steps"] = [
+                "Verify the model URL and available disk space, then retry."
+            ]
             return action
 
     def _download_hf_snapshot(
@@ -616,7 +630,13 @@ class HealingPlanner:
                     "backend": action["backend"],
                     "action": "install_package",
                     "package": "huggingface_hub",
-                    "command": [sys.executable, "-m", "pip", "install", "huggingface_hub"],
+                    "command": [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        "huggingface_hub",
+                    ],
                     "retryable": True,
                 },
                 [sys.executable, "-m", "pip", "install", "huggingface_hub"],
@@ -652,7 +672,9 @@ class HealingPlanner:
         except Exception as exc:
             action["status"] = "failed"
             action["error"] = str(exc)
-            action["next_steps"] = ["Verify HF_LOCAL_REPO_ID, network access, and authentication if required."]
+            action["next_steps"] = [
+                "Verify HF_LOCAL_REPO_ID, network access, and authentication if required."
+            ]
             return action
 
     def _skip(self, action: Dict[str, Any], reason: str) -> Dict[str, Any]:
@@ -682,7 +704,9 @@ class HealingPlanner:
                 )
         return discovered
 
-    def _discover_gguf_models(self, diagnostics: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _discover_gguf_models(
+        self, diagnostics: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
         candidates: List[Path] = []
         configured = diagnostics.get("model_path")
         if configured and configured != "MISSING":
@@ -714,7 +738,9 @@ class HealingPlanner:
 
         return self._dedupe_discovered_paths(candidates, source="filesystem")
 
-    def _discover_hf_local_models(self, diagnostics: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _discover_hf_local_models(
+        self, diagnostics: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
         candidates: List[Path] = []
         configured = diagnostics.get("model_path")
         if configured and configured != "MISSING":
@@ -817,17 +843,37 @@ class HealingPlanner:
             normalized = str(value).upper()
             if package_key in key.lower() and normalized == "MISSING":
                 return True
-            if package == "google-generativeai" and key == "library" and normalized == "MISSING":
+            if (
+                package == "google-generativeai"
+                and key == "library"
+                and normalized == "MISSING"
+            ):
                 return True
-            if package == "huggingface_hub" and key == "library" and normalized == "MISSING":
+            if (
+                package == "huggingface_hub"
+                and key == "library"
+                and normalized == "MISSING"
+            ):
                 return True
-            if package == "llama-cpp-python" and key == "llama_cpp" and normalized == "MISSING":
+            if (
+                package == "llama-cpp-python"
+                and key == "llama_cpp"
+                and normalized == "MISSING"
+            ):
                 return True
-            if package == "transformers" and key == "transformers" and normalized == "MISSING":
+            if (
+                package == "transformers"
+                and key == "transformers"
+                and normalized == "MISSING"
+            ):
                 return True
             if package == "torch" and key == "torch" and normalized == "MISSING":
                 return True
-            if package == "openai" and key == "openai_library" and normalized == "MISSING":
+            if (
+                package == "openai"
+                and key == "openai_library"
+                and normalized == "MISSING"
+            ):
                 return True
         return False
 

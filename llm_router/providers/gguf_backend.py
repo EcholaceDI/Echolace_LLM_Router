@@ -38,11 +38,7 @@ class GGUFBackend(LLMBackend):
             "model_exists": os.path.exists(model_path) if model_path else False,
         }
 
-    def __init__(
-        self,
-        model: Optional[str] = None,
-        **kwargs: Any
-    ):
+    def __init__(self, model: Optional[str] = None, **kwargs: Any):
         if not self._has_library():
             raise DependencyMissingError(
                 "llama_cpp (install via: pip install llama-cpp-python)"
@@ -82,9 +78,7 @@ class GGUFBackend(LLMBackend):
         return "".join(tokens)
 
     def stream(
-        self,
-        prompt: str,
-        **kwargs: Any
+        self, prompt: str, **kwargs: Any
     ) -> Generator[Dict[str, Any], None, None]:
         args = {
             "max_tokens": kwargs.get("max_tokens", 512),

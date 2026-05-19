@@ -37,11 +37,13 @@ REGISTERED_BACKENDS: List[Type[LLMBackend]] = []
 def _try_import_backend(module_name: str, class_name: str) -> None:
     try:
         import importlib
+
         module = importlib.import_module(f".{module_name}", package="llm_router")
         backend_class = getattr(module, class_name)
         REGISTERED_BACKENDS.append(backend_class)
     except Exception:
         pass
+
 
 # -------------------------------------
 # Backend discovery (alphabetical order)
@@ -75,16 +77,10 @@ _try_import_backend("providers.ollama_backend", "OllamaBackend")
 _try_import_backend("providers.openai_backend_standard", "OpenAIBackend")
 
 # OpenAI Streaming
-_try_import_backend(
-    "providers.openai_backend_streaming",
-    "OpenAIStreamingBackend"
-)
+_try_import_backend("providers.openai_backend_streaming", "OpenAIStreamingBackend")
 
 # Universal OpenAI-compatible (e.g., vLLM, xAI, Groq, etc.)
-_try_import_backend(
-    "providers.openai_universal_backend",
-    "OpenAIUniversalBackend"
-)
+_try_import_backend("providers.openai_universal_backend", "OpenAIUniversalBackend")
 
 
 # ----------------------

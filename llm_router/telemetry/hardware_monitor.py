@@ -11,7 +11,6 @@ from typing import Any, Callable, Deque, Dict, List, Optional
 
 from .benchmark_store import BenchmarkStore
 
-
 CanaryRunner = Callable[[str, str], Any]
 
 
@@ -283,8 +282,7 @@ class HardwareMonitor:
 
         metrics["cuda"] = torch.cuda.is_available()
         metrics["mps"] = bool(
-            hasattr(torch.backends, "mps")
-            and torch.backends.mps.is_available()
+            hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
         )
         if metrics["cuda"]:
             metrics["available"] = True
@@ -345,8 +343,12 @@ class HardwareMonitor:
             return {
                 "available": True,
                 "vendor": "amd",
-                "utilization_percent": float(util_match.group(1)) if util_match else None,
-                "memory_utilization_percent": float(mem_match.group(1)) if mem_match else None,
+                "utilization_percent": (
+                    float(util_match.group(1)) if util_match else None
+                ),
+                "memory_utilization_percent": (
+                    float(mem_match.group(1)) if mem_match else None
+                ),
                 "temperature_c": float(temp_match.group(1)) if temp_match else None,
             }
         except Exception:
@@ -368,7 +370,9 @@ class HardwareMonitor:
                     text=True,
                     check=False,
                 )
-                metrics["thermal_pressure"] = _parse_apple_thermal_pressure(result.stdout)
+                metrics["thermal_pressure"] = _parse_apple_thermal_pressure(
+                    result.stdout
+                )
             except Exception:
                 pass
         if shutil.which("powermetrics"):

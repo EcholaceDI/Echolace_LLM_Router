@@ -70,10 +70,7 @@ class OllamaBackend(LLMBackend):
 
     def __init__(self, model: Optional[str] = None, **kwargs):
         self.base_url = self._base_url()
-        self.model = (
-            model or
-            os.getenv("OLLAMA_MODEL", None)
-        )
+        self.model = model or os.getenv("OLLAMA_MODEL", None)
         self.gen_kwargs = kwargs
 
     def _post(self, endpoint: str, payload: dict) -> dict:
@@ -86,16 +83,11 @@ class OllamaBackend(LLMBackend):
                 timeout=60,
             )
             if resp.status_code != 200:
-                msg = (
-                    "Ollama backend error HTTP "
-                    f"{resp.status_code}: {resp.text}"
-                )
+                msg = "Ollama backend error HTTP " f"{resp.status_code}: {resp.text}"
                 raise DependencyMissingError(msg)
             return resp.json()
         except Exception as exc:
-            raise DependencyMissingError(
-                f"Ollama request failed: {exc}"
-            )
+            raise DependencyMissingError(f"Ollama request failed: {exc}")
 
     def generate(self, prompt: str, **kwargs) -> str:
         """Non-streaming text generation."""
@@ -114,11 +106,7 @@ class OllamaBackend(LLMBackend):
         except Exception:
             return json.dumps(result)
 
-    def stream(
-        self,
-        prompt: str,
-        **kwargs
-    ) -> Generator[Dict[str, Any], None, None]:
+    def stream(self, prompt: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
         """Streaming output from Ollama."""
         payload = {
             "model": self.model,
@@ -136,10 +124,7 @@ class OllamaBackend(LLMBackend):
             stream=True,
         ) as resp:
             if resp.status_code != 200:
-                msg = (
-                    "Ollama streaming error HTTP "
-                    f"{resp.status_code}: {resp.text}"
-                )
+                msg = "Ollama streaming error HTTP " f"{resp.status_code}: {resp.text}"
                 raise DependencyMissingError(msg)
 
             for line in resp.iter_lines():
