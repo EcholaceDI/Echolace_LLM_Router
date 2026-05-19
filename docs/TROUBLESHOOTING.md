@@ -64,3 +64,15 @@ The router supports structured logging via environment variables:
 
 In JSON mode, logs include an `event` field plus structured metadata for routing decisions.
 
+## Collect diagnostics for support
+
+From the project root:
+
+- Human-readable report:
+  - `python -m llm_router diagnose`
+- JSON report:
+  - `python -m llm_router diagnose --json`
+- Environment summary only:
+  - `python -m llm_router env`
+
+Attach the JSON output to the issue report when possible (redact secrets before sharing).

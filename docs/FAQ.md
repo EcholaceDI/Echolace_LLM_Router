@@ -187,8 +187,8 @@ Older examples that use names like `openai` or `huggingface` are stale unless th
 
 ## What license does this repository currently declare?
 
-The current package metadata declares MIT in `pyproject.toml`.
-If documentation elsewhere says Apache 2.0, that older text is stale.
+The canonical license for this project is Apache 2.0 (see `LICENSE`).
+The package metadata in `pyproject.toml` is aligned to `Apache-2.0`.
 
 ## How do I get a clean environment report?
 

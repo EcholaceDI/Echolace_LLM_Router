@@ -7,14 +7,13 @@ name = "echolace-llm-router"
 version = "0.10.0rc0"
 description = "A modular LLM router for multiple backends"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 authors = [{name = "Echolace Team", email = "team@echolace.dev"}]
 maintainers = [{name = "Echolace Team", email = "team@echolace.dev"}]
 keywords = ["llm", "ai", "router", "anthropic", "openai", "gemini", "huggingface"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -76,6 +75,9 @@ Homepage = "https://github.com/echolace/llm-router"
 Documentation = "https://echolace-llm-router.readthedocs.io/"
 Repository = "https://github.com/echolace/llm-router.git"
 "Bug Tracker" = "https://github.com/echolace/llm-router/issues"
+
+[project.scripts]
+echolace-diagnose = "llm_router.__main__:main"
 
 [tool.setuptools.packages.find]
 include = ["llm_router*"]
