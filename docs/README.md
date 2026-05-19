@@ -10,6 +10,7 @@ Echolace LLM Router currently ships a policy-driven routing layer with privacy c
 - [FAQ](FAQ.md)
 - [Changelog](../CHANGELOG.md)
 - [Integration Guide](INTEGRATION_GUIDE.md)
+- [Deployment](DEPLOYMENT.md)
 - [Project Metadata](PROJECT_METADATA.md)
 - [Strategic Roadmap](STRATEGIC_ROADMAP.md)
 

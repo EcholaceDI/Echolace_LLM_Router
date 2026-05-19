@@ -45,7 +45,7 @@ Local model configuration:
 ## Workflows / Orchestration
 No orchestration workflows found.
 ## Deployment
-Deployment target is environment-specific. Treat this folder as a Python package that can be vendored into a service or installed as an editable dependency.
+Deployment target and process: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 ## Testing
 Run `python -m pytest -q`.
 ## Example usage / snippets
@@ -64,7 +64,7 @@ Examples:
 ## Security & Privacy
 Potential secret/data handling detected.
 ## Contributing
-Open issues/PRs: https://github.com/EcholaceDI/Echolace-DI/issues
+Guidelines: [`CONTRIBUTING.md`](CONTRIBUTING.md). Open issues/PRs: https://github.com/EcholaceDI/Echolace-DI/issues
 ## Maintainers & Contact
 Maintainers: see `MAINTAINERS.md`.
 ## License & Credits
